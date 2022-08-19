@@ -4,9 +4,12 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 //import javax.persistence.JoinColumn; // JRF manually adding
 //import javax.persistence.JoinTable;
 //import javax.persistence.ManyToMany;
@@ -18,6 +21,8 @@ import javax.persistence.Table;
 
 
 import org.springframework.format.annotation.DateTimeFormat;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 //JRF: keep below OUT when building the autoJoinTbl solution
 //import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -47,11 +52,11 @@ public class WorkerMdl {
     
     // start: code for joins
     
-//    // join user table
-//	@ManyToOne(fetch = FetchType.LAZY)
-//	@JoinColumn(name="createdby_id")
-//	private UserMdl userMdl;  
-//	
+    // join user table
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name="createdby_id")
+	@JsonIgnore
+	private UserMdl userMdl;  
     
 	
     // instantiate the model: 
@@ -116,7 +121,14 @@ public class WorkerMdl {
 		this.hireDate = hireDate;
 	}
 
-	
+	public UserMdl getUserMdl() {
+		return userMdl;
+	}
+
+	public void setUserMdl(UserMdl userMdl) {
+		this.userMdl = userMdl;
+	}
+
     
     // end: getters and setters
     

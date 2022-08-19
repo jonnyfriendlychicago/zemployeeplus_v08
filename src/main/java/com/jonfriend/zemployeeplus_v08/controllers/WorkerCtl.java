@@ -9,11 +9,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.jonfriend.zemployeeplus_v08.models.UserMdl;
+//import com.jonfriend.playdatenow_v03.models.UserMdl;
 //import com.jonfriend.zemployeeplus_v08.models.UserMdl;
 import com.jonfriend.zemployeeplus_v08.models.WorkerMdl;
 import com.jonfriend.zemployeeplus_v08.services.UserSrv;
 import com.jonfriend.zemployeeplus_v08.services.WorkerSrv;
 
+import java.security.Principal;
 import java.util.List;
 
 //import java.security.Principal;
@@ -38,12 +41,28 @@ public class WorkerCtl {
     @PostMapping("/add")
     public ResponseEntity<WorkerMdl> add(
         @Valid @RequestBody WorkerMdl workerMdl,
-        BindingResult result) {
+        BindingResult result, 
+        Principal principal
+        ) {
 
             if ( !result.hasErrors() ) {
-                return ResponseEntity.status(201).body(this.service.create(workerMdl));
+            	
+            	System.out.println("Path: /worker/add");
+
+            	String authUserEmail = principal.getName(); 
+            	System.out.println("authUserEmail: " + authUserEmail); 
+            	
+            	UserMdl authUserObj = userSrv.findByEmail(authUserEmail);
+//            	System.out.println("authUserObj: " + authUserObj); // results of this print stmt look like hell
+            	
+            	workerMdl.setUserMdl(authUserObj); 
+            	
+
+            	return ResponseEntity.status(201).body(this.service.create(workerMdl));
             }
-            return ResponseEntity.status(422).body(null);
+            
+            return ResponseEntity.status(422).body(null);     
+            
     }
 
     @PostMapping("/update")
