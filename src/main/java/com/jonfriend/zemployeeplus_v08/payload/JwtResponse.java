@@ -4,7 +4,7 @@ import com.jonfriend.zemployeeplus_v08.models.UserMdl;
 
 import lombok.Data;
 
-@Data
+//@Data
 public class JwtResponse {
   private String auth_token;
   private String type = "Bearer";
@@ -15,12 +15,29 @@ public class JwtResponse {
     this.user = user;
   }
 
-  public String getauth_token() { // odd naming convention to match React requirements
+  public String getAuth_token() { // odd naming convention to match React requirements
     return auth_token;
   }
 
-  public void setauth_token(String accessToken) { 
+  public void setAuth_token(String accessToken) { 
     this.auth_token = accessToken;
   }
+
+public String getType() {
+	return type;
+}
+
+public void setType(String type) {
+	this.type = type;
+}
+
+public UserMdl getUser() {
+	return user;
+}
+
+public void setUser(UserMdl user) {
+	this.user = user;
+}
+  
 
 }

@@ -79,8 +79,11 @@ public class AuthCtl {
 		List<String> roles = userDetails.getAuthorities().stream()
 				.map(item -> item.getAuthority())
 				.collect(Collectors.toList());
-		return new JwtResponse(jwt, 
-								new UserMdl(userDetails.getId(), userDetails.getEmail()));
+		
+		UserMdl um = new UserMdl(userDetails.getId(), userDetails.getEmail());
+		
+		return new JwtResponse(jwt, um
+								);
 	}
 	
 	@PostMapping("/login")
