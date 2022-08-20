@@ -1,7 +1,9 @@
 package com.jonfriend.zemployeeplus_v08.models;
 
 import java.util.Date;
+import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -10,6 +12,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 //import javax.persistence.JoinColumn; // JRF manually adding
 //import javax.persistence.JoinTable;
 //import javax.persistence.ManyToMany;
@@ -23,12 +26,11 @@ import javax.persistence.Table;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-//JRF: keep below OUT when building the autoJoinTbl solution
-//import com.fasterxml.jackson.annotation.JsonIgnore;
+
 
 @Entity
-@Table(name="worker")
-public class WorkerMdl {
+@Table(name="division")
+public class DivisionMdl {
     
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -42,17 +44,7 @@ public class WorkerMdl {
 
 	// begin: entity-specific table fields
 //	@NotBlank(message="twinoneName is required.")
-	private String firstName;
-    
-	private String lastName;
-	
-	private Date hireDate; 
-	
-	private String jobTitle;
-	
-	private String workerDescription;
-	
-	private String employmentType;
+	private String DivisionName;
     
     // end: entity-specific table fields
     
@@ -61,18 +53,15 @@ public class WorkerMdl {
     // join user table
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name="createdby_id")
-	@JsonIgnore
+	//@JsonIgnore
 	private UserMdl userMdl;  
-    
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name="division_id")
-	@JsonIgnore
-	private DivisionMdl divisionMdl;  
 	
-	// end joins
+	@OneToMany(mappedBy = "divisionMdl", cascade = CascadeType.ALL, fetch = FetchType.LAZY) // mappedBy must match attribute in child
+	//@JsonIgnore
+	private List<WorkerMdl> workerMdl;
 	
     // instantiate the model: 
-    public WorkerMdl() {}
+    public DivisionMdl() {}
     
     // add methods to populate maintain createdAt/UpdatedAt
     @PrePersist
@@ -83,7 +72,6 @@ public class WorkerMdl {
     protected void onUpdate(){
         this.updatedAt = new Date();
     }
-    // begin: getters and setters
 
 	public Long getId() {
 		return id;
@@ -109,52 +97,12 @@ public class WorkerMdl {
 		this.updatedAt = updatedAt;
 	}
 
-	public String getFirstName() {
-		return firstName;
+	public String getDivisionName() {
+		return DivisionName;
 	}
 
-	public void setFirstName(String firstName) {
-		this.firstName = firstName;
-	}
-
-	public String getLastName() {
-		return lastName;
-	}
-
-	public void setLastName(String lastName) {
-		this.lastName = lastName;
-	}
-
-	public Date getHireDate() {
-		return hireDate;
-	}
-
-	public void setHireDate(Date hireDate) {
-		this.hireDate = hireDate;
-	}
-
-	public String getJobTitle() {
-		return jobTitle;
-	}
-
-	public void setJobTitle(String jobTitle) {
-		this.jobTitle = jobTitle;
-	}
-
-	public String getWorkerDescription() {
-		return workerDescription;
-	}
-
-	public void setWorkerDescription(String workerDescription) {
-		this.workerDescription = workerDescription;
-	}
-
-	public String getEmploymentType() {
-		return employmentType;
-	}
-
-	public void setEmploymentType(String employmentType) {
-		this.employmentType = employmentType;
+	public void setDivisionName(String divisionName) {
+		DivisionName = divisionName;
 	}
 
 	public UserMdl getUserMdl() {
@@ -165,15 +113,18 @@ public class WorkerMdl {
 		this.userMdl = userMdl;
 	}
 
-	public DivisionMdl getDivisionMdl() {
-		return divisionMdl;
+	public List<WorkerMdl> getWorkerMdl() {
+		return workerMdl;
 	}
 
-	public void setDivisionMdl(DivisionMdl divisionMdl) {
-		this.divisionMdl = divisionMdl;
+	public void setWorkerMdl(List<WorkerMdl> workerMdl) {
+		this.workerMdl = workerMdl;
 	}
+    
+    // begin: getters and setters
 
 
+    
     // end: getters and setters
 // JRF comment proving pull success 2:30pm
 // end mdl

@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.jonfriend.zemployeeplus_v08.models.DivisionMdl;
 import com.jonfriend.zemployeeplus_v08.models.UserMdl;
 //import com.jonfriend.playdatenow_v03.models.UserMdl;
 //import com.jonfriend.zemployeeplus_v08.models.UserMdl;
@@ -56,6 +57,9 @@ public class WorkerCtl {
 //            	System.out.println("authUserObj: " + authUserObj); // results of this print stmt look like hell
             	
             	workerMdl.setUserMdl(authUserObj); 
+            	
+            	DivisionMdl divisionThingId = workerMdl.getDivisionMdl(); 
+            			
             	
 
             	return ResponseEntity.status(201).body(this.service.create(workerMdl));

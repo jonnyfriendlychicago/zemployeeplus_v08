@@ -36,20 +36,25 @@ public class UserMdl {
 	@NotBlank
 	@Size(max = 120)
 	private String password;
+	
+	// begin joins
+	
 	// JRF: cascade...All will delete ALL child records if/when this parent record is whacked
 	@OneToMany(mappedBy = "userMdl", cascade = CascadeType.ALL, fetch = FetchType.LAZY) // mappedBy must match attribute in child
-	@JsonIgnore
+	//@JsonIgnore
 	private List<WorkerMdl> workerMdl;
 
-//  @OneToMany(mappedBy="user", cascade=CascadeType.ALL, fetch = FetchType.LAZY) // mappedBy must match attribute in child
-//  @JsonIgnore
-//  private List<Joke> jokes;
+	@OneToMany(mappedBy = "userMdl", cascade = CascadeType.ALL, fetch = FetchType.LAZY) // mappedBy must match attribute in child
+	//@JsonIgnore
+	private List<DivisionMdl> divisionMdl;
 
 	@ManyToMany(fetch = FetchType.LAZY)
 	@JoinTable(name = "user_role", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
 	//@JsonIgnore
 	private Set<RoleMdl> roles = new HashSet<>();
 
+	// end joins
+	
 //begin: waht is this???
 	public UserMdl(String email, String password) {
 		this.email = email;
@@ -100,6 +105,14 @@ public class UserMdl {
 		this.workerMdl = workerMdl;
 	}
 
+	public List<DivisionMdl> getDivisionMdl() {
+		return divisionMdl;
+	}
+
+	public void setDivisionMdl(List<DivisionMdl> divisionMdl) {
+		this.divisionMdl = divisionMdl;
+	}
+
 	public Set<RoleMdl> getRoles() {
 		return roles;
 	}
@@ -108,4 +121,8 @@ public class UserMdl {
 		this.roles = roles;
 	}
 
+	// begin getters/setters
+	
+	
+	// end getters/setters
 }
