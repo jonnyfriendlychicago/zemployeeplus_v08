@@ -14,6 +14,7 @@ import com.jonfriend.zemployeeplus_v08.models.UserMdl;
 //import com.jonfriend.playdatenow_v03.models.UserMdl;
 //import com.jonfriend.zemployeeplus_v08.models.UserMdl;
 import com.jonfriend.zemployeeplus_v08.models.WorkerMdl;
+import com.jonfriend.zemployeeplus_v08.services.DivisionSrv;
 import com.jonfriend.zemployeeplus_v08.services.UserSrv;
 import com.jonfriend.zemployeeplus_v08.services.WorkerSrv;
 
@@ -34,10 +35,13 @@ import org.springframework.http.ResponseEntity;
 public class WorkerCtl {
 
     @Autowired
-    WorkerSrv service;
+    WorkerSrv workerSrv;
 
     @Autowired
     UserSrv userSrv;
+    
+    @Autowired
+    DivisionSrv divisionSrv;
     
     @PostMapping("/add")
     public ResponseEntity<WorkerMdl> add(
@@ -51,31 +55,58 @@ public class WorkerCtl {
             	System.out.println("Path: /worker/add");
 
             	String authUserEmail = principal.getName(); 
-            	System.out.println("authUserEmail: " + authUserEmail); 
-            	
             	UserMdl authUserObj = userSrv.findByEmail(authUserEmail);
-//            	System.out.println("authUserObj: " + authUserObj); // results of this print stmt look like hell
-            	
             	workerMdl.setUserMdl(authUserObj); 
+            	//above working to set user_id from the authenticated user, dont' mess it up, Jon!
             	
-            	DivisionMdl divisionThingId = workerMdl.getDivisionMdl(); 
-            			
-            	
+            	Integer divisionIdFromPostman = workerMdl.getDivisionIdTempStor(); 
+            	System.out.println("divisionIdFromPostman: " + divisionIdFromPostman); 
 
-            	return ResponseEntity.status(201).body(this.service.create(workerMdl));
+            	Long divisionIdFromPostmanLong = Long.valueOf(divisionIdFromPostman);  
+            	System.out.println("divisionIdFromPostmanLong: " + divisionIdFromPostmanLong);
+            	
+            	DivisionMdl targetedDivisionObj = divisionSrv.findById(divisionIdFromPostmanLong);
+
+            	workerMdl.setDivisionMdl(targetedDivisionObj); 
+            	
+            	return ResponseEntity.status(201).body(this.workerSrv.create(workerMdl));
             }
             
             return ResponseEntity.status(422).body(null);     
             
+            
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<WorkerMdl> view(
+    		@PathVariable Long id
+    		) {
+    	
+    	WorkerMdl workerObj = this.workerSrv.retrieve(id); 
+    	
+//    	DivisionMdl workerDivisionObj = workerObj.getDivisionMdl(); 
+//    	String workerDivisionName = workerDivisionObj.getDivisionName();     	
+//    	workerObj.setWorkerDivisionName(workerDivisionName); 
+    	// OMG, above works, and it sends the workerDivisionName to JSON-postman.  Merry Christmas, holy shit.  below is one big code line to encapsulate above
+    	workerObj.setWorkerDivisionName(workerObj.getDivisionMdl().getDivisionName());
+    	
+    	workerObj.setDivisionIdTempStor(workerObj.getDivisionMdl().getId().intValue());
+    	
+    	
+    	
+    	
+    	
+//    	return ResponseEntity.status(200).body(this.workerSrv.retrieve(id));
+    	return ResponseEntity.status(200).body(workerObj);
+    }
+    
     @PostMapping("/update")
     public ResponseEntity<WorkerMdl> update(
         @Valid @RequestBody WorkerMdl workerMdl,
         BindingResult result) {
 
             if ( !result.hasErrors() ) {
-                return ResponseEntity.status(200).body(this.service.update(workerMdl));
+                return ResponseEntity.status(200).body(this.workerSrv.update(workerMdl));
             }
             return ResponseEntity.status(422).body(null);
     }
@@ -84,16 +115,10 @@ public class WorkerCtl {
     public ResponseEntity<WorkerMdl> update(
         @PathVariable Long id
         ) {
-            this.service.delete(id);
+            this.workerSrv.delete(id);
             return ResponseEntity.status(200).body(null);
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<WorkerMdl> view(
-        @PathVariable Long id
-        ) {
-            return ResponseEntity.status(200).body(this.service.retrieve(id));
-    }
 
 //    @GetMapping("/my")
 //    public ResponseEntity<List<WorkerMdl>> myTopics(
@@ -109,6 +134,6 @@ public class WorkerCtl {
   @GetMapping("/all")
   public ResponseEntity<List<WorkerMdl>> getAll(
       ) {
-	  return ResponseEntity.status(200).body(this.service.all());
+	  return ResponseEntity.status(200).body(this.workerSrv.all());
   }
 }

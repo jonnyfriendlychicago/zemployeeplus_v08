@@ -18,7 +18,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
 import javax.persistence.Table;
-
+import javax.persistence.Transient;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -53,6 +53,12 @@ public class WorkerMdl {
 	private String workerDescription;
 	
 	private String employmentType;
+	
+	@Transient 
+	private Integer divisionIdTempStor;  
+	
+	@Transient 
+	private String workerDivisionName;  
     
     // end: entity-specific table fields
     
@@ -64,6 +70,7 @@ public class WorkerMdl {
 	@JsonIgnore
 	private UserMdl userMdl;  
     
+	// join division
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name="division_id")
 	@JsonIgnore
@@ -171,6 +178,23 @@ public class WorkerMdl {
 
 	public void setDivisionMdl(DivisionMdl divisionMdl) {
 		this.divisionMdl = divisionMdl;
+	}
+	
+//	@JsonIgnore
+	public Integer getDivisionIdTempStor() {
+		return divisionIdTempStor;
+	}
+
+	public void setDivisionIdTempStor(Integer divisionIdTempStor) {
+		this.divisionIdTempStor = divisionIdTempStor;
+	}
+
+	public String getWorkerDivisionName() {
+		return workerDivisionName;
+	}
+
+	public void setWorkerDivisionName(String workerDivisionName) {
+		this.workerDivisionName = workerDivisionName;
 	}
 
 
