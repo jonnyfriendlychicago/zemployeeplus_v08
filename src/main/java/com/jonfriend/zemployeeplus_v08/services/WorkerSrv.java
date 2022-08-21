@@ -25,6 +25,10 @@ public class WorkerSrv {
 		return this.workerRpo.save(workerMdl);
 	}
 	
+	public WorkerMdl update(WorkerMdl workerMdl) {
+		return this.workerRpo.save(workerMdl);
+	}
+	
 	public void delete(Long id) {
 		this.workerRpo.deleteById(id);
 	}
@@ -34,7 +38,4 @@ public class WorkerSrv {
 	}
 	
 	
-	public WorkerMdl update(WorkerMdl workerMdl) {
-		return this.workerRpo.save(workerMdl);
-	}
 }

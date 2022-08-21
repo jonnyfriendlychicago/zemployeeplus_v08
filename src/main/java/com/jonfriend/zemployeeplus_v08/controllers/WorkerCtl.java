@@ -49,32 +49,30 @@ public class WorkerCtl {
         BindingResult result, 
         Principal principal
         ) {
-
             if ( !result.hasErrors() ) {
             	
             	System.out.println("Path: /worker/add");
 
-            	String authUserEmail = principal.getName(); 
-            	UserMdl authUserObj = userSrv.findByEmail(authUserEmail);
-            	workerMdl.setUserMdl(authUserObj); 
-            	//above working to set user_id from the authenticated user, dont' mess it up, Jon!
+//            	String authUserEmail = principal.getName(); 
+//            	UserMdl authUserObj = userSrv.findByEmail(authUserEmail);
+//            	workerMdl.setUserMdl(authUserObj); 
+            	//above working to set user_id from the authenticated user, dont' mess it up, Jon! actually, below is a one-line refactoring of above
+            	workerMdl.setUserMdl(userSrv.findByEmail(principal.getName()));
             	
-            	Integer divisionIdFromPostman = workerMdl.getDivisionIdTempStor(); 
-            	System.out.println("divisionIdFromPostman: " + divisionIdFromPostman); 
-
-            	Long divisionIdFromPostmanLong = Long.valueOf(divisionIdFromPostman);  
-            	System.out.println("divisionIdFromPostmanLong: " + divisionIdFromPostmanLong);
             	
-            	DivisionMdl targetedDivisionObj = divisionSrv.findById(divisionIdFromPostmanLong);
-
-            	workerMdl.setDivisionMdl(targetedDivisionObj); 
+//            	Integer divisionIdFromPostman = workerMdl.getDivisionIdTempStor();  
+//            	Long divisionIdFromPostmanLong = Long.valueOf(divisionIdFromPostman);  
+//            	DivisionMdl targetedDivisionObj = divisionSrv.findById(divisionIdFromPostmanLong);
+//            	workerMdl.setDivisionMdl(targetedDivisionObj); 
+            	// all of above is setting the division_id in the database by capture/process the id coming from postman; refactored into below. 
+//            	workerMdl.setDivisionMdl(divisionSrv.findById(Long.valueOf(workerMdl.getDivisionIdTempStor())));
+            	workerMdl.setDivisionMdl(divisionSrv.findById(Long.valueOf(workerMdl.getWorkerDivisionId())));
+            	
+            	workerMdl.setWorkerDivisionName(workerMdl.getDivisionMdl().getDivisionName()); // took this from the getMap... and holy cow it works
             	
             	return ResponseEntity.status(201).body(this.workerSrv.create(workerMdl));
             }
-            
-            return ResponseEntity.status(422).body(null);     
-            
-            
+            return ResponseEntity.status(422).body(null);      
     }
 
     @GetMapping("/{id}")
@@ -83,18 +81,13 @@ public class WorkerCtl {
     		) {
     	
     	WorkerMdl workerObj = this.workerSrv.retrieve(id); 
-    	
 //    	DivisionMdl workerDivisionObj = workerObj.getDivisionMdl(); 
 //    	String workerDivisionName = workerDivisionObj.getDivisionName();     	
 //    	workerObj.setWorkerDivisionName(workerDivisionName); 
     	// OMG, above works, and it sends the workerDivisionName to JSON-postman.  Merry Christmas, holy shit.  below is one big code line to encapsulate above
     	workerObj.setWorkerDivisionName(workerObj.getDivisionMdl().getDivisionName());
     	
-    	workerObj.setDivisionIdTempStor(workerObj.getDivisionMdl().getId().intValue());
-    	
-    	
-    	
-    	
+    	workerObj.setWorkerDivisionId(workerObj.getDivisionMdl().getId().intValue());
     	
 //    	return ResponseEntity.status(200).body(this.workerSrv.retrieve(id));
     	return ResponseEntity.status(200).body(workerObj);
@@ -103,9 +96,18 @@ public class WorkerCtl {
     @PostMapping("/update")
     public ResponseEntity<WorkerMdl> update(
         @Valid @RequestBody WorkerMdl workerMdl,
-        BindingResult result) {
+        BindingResult result
+        ) {
 
             if ( !result.hasErrors() ) {
+            	System.out.println("Path: /worker/update");
+
+            	workerMdl.setDivisionMdl(divisionSrv.findById(Long.valueOf(workerMdl.getWorkerDivisionId())));
+                
+                workerMdl.setWorkerDivisionName(workerMdl.getDivisionMdl().getDivisionName()); // took this from the getMap... and holy cow it works
+//                System.out.println("workerMdl.getDivisionMdl().getDivisionName(): " + workerMdl.getDivisionMdl().getDivisionName());
+//                System.out.println("workerMdl.getWorkerDivisionName(): " + workerMdl.getWorkerDivisionName()); 
+                
                 return ResponseEntity.status(200).body(this.workerSrv.update(workerMdl));
             }
             return ResponseEntity.status(422).body(null);

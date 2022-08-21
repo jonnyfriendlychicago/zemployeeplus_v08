@@ -54,11 +54,6 @@ public class WorkerMdl {
 	
 	private String employmentType;
 	
-	@Transient 
-	private Integer divisionIdTempStor;  
-	
-	@Transient 
-	private String workerDivisionName;  
     
     // end: entity-specific table fields
     
@@ -73,8 +68,13 @@ public class WorkerMdl {
 	// join division
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name="division_id")
-	@JsonIgnore
+	@JsonIgnore // IMPORTANTE!!! if this is not here, the workerCreate call will not work, guaranteed.  JSON/Postman can't handle objects.
 	private DivisionMdl divisionMdl;  
+	
+	@Transient 
+	private Integer workerDivisionId;
+	@Transient 
+	private String workerDivisionName;  
 	
 	// end joins
 	
@@ -180,14 +180,13 @@ public class WorkerMdl {
 		this.divisionMdl = divisionMdl;
 	}
 	
-//	@JsonIgnore
-	public Integer getDivisionIdTempStor() {
-		return divisionIdTempStor;
-	}
-
-	public void setDivisionIdTempStor(Integer divisionIdTempStor) {
-		this.divisionIdTempStor = divisionIdTempStor;
-	}
+//	public Integer getDivisionIdTempStor() {
+//		return divisionIdTempStor;
+//	}
+//
+//	public void setDivisionIdTempStor(Integer divisionIdTempStor) {
+//		this.divisionIdTempStor = divisionIdTempStor;
+//	}
 
 	public String getWorkerDivisionName() {
 		return workerDivisionName;
@@ -195,6 +194,14 @@ public class WorkerMdl {
 
 	public void setWorkerDivisionName(String workerDivisionName) {
 		this.workerDivisionName = workerDivisionName;
+	}
+
+	public Integer getWorkerDivisionId() {
+		return workerDivisionId;
+	}
+
+	public void setWorkerDivisionId(Integer workerDivisionId) {
+		this.workerDivisionId = workerDivisionId;
 	}
 
 
